@@ -1,6 +1,7 @@
 from fastapi import FastAPI, HTTPException, status
 from pydantic import BaseModel
 from typing import List
+from fastapi import Body
 
 app = FastAPI()
 
@@ -50,6 +51,17 @@ def get_cars():
 def get_car(id: str):
     for car in cars_db:
         if car.id == id:
+            return car
+    raise HTTPException(
+        status_code=status.HTTP_404_NOT_FOUND,
+        detail=f"La voiture avec l'identifiant '{id}' n'existe pas ou n'a pas été trouvée."
+    )
+# PUT
+@app.put("/cars/{id}/characteristics")
+def update_characteristics(id: str, characteristics: Characteristic = Body(...)):
+    for car in cars_db:
+        if car.id == id:
+            car.characteristics = characteristics
             return car
     raise HTTPException(
         status_code=status.HTTP_404_NOT_FOUND,
