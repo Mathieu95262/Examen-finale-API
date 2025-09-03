@@ -1,0 +1,134 @@
+openapi: 3.0.3
+info:
+  title: STD24056
+  version: "1.0.0"
+  description: "This is a specification of STD24056"
+servers:
+  - url: http://localhost:8000
+paths:
+  /ping:
+    get:
+      summary: Verifie que pong marche
+      responses:
+        '200':
+          description: "pong"
+          content:
+            text/plain:
+              schema:
+                type: string
+  /cars:
+    post:
+      summary: Crée une liste de voitures
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/Car'
+      responses:
+        '201':
+          description: Liste des voitures crées
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Car'
+    get:
+      summary: Récupère la liste des voitures
+      responses:
+        '200':
+          description: Liste des voitures
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Car'
+  /cars/{id}:
+    get:
+      summary: Récupère une voiture par identifiant
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Voiture trouvée
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Car'
+        '404':
+          description: Voiture non trouvée
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /cars/{id}/characteristics:
+    put:
+      summary: Met à jour les caractéristiques d'une voiture
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Characteristic'
+      responses:
+        '200':
+          description: Voiture mise à jour
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Car'
+        '404':
+          description: Voiture non trouvée
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+components:
+  schemas:
+    Characteristic:
+      type: object
+      properties:
+        max_speed:
+          type: number
+        max_fuel_capacity:
+          type: number
+      required:
+        - max_speed
+        - max_fuel_capacity
+    Car:
+      type: object
+      properties:
+        id:
+          type: string
+        brand:
+          type: string
+        model:
+          type: string
+        characteristics:
+          $ref: '#/components/schemas/Characteristic'
+      required:
+        - id
+        - brand
+        - model
+        - characteristics
+    Error:
+      type: object
+      properties:
+        detail:
+          type: string
+      required:
+        - detail
